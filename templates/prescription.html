@@ -1,0 +1,92 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary-emphasis text-uppercase">
+            <i class="fas fa-file-prescription me-2"></i>Kê Đơn Thuốc
+        </h2>
+        <p class="text-muted">Kiểm tra kỹ chẩn đoán và ghi chú bệnh nền trước khi ra toa</p>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-primary-subtle text-primary-emphasis fw-bold">
+            <i class="fas fa-user-medical me-2"></i>Thông tin bệnh nhân & Chẩn đoán
+        </div>
+        <div class="card-body bg-white">
+            <div class="row align-items-center">
+                <div class="col-md-4 border-end">
+                    <p class="mb-1 text-muted small fw-bold text-uppercase">Bệnh nhân</p>
+                    <h5 class="text-primary fw-bold mb-0">{{ ts.appointment.patient.name }}</h5>
+                </div>
+                <div class="col-md-4 border-end ps-4">
+                    <p class="mb-1 text-muted small fw-bold text-uppercase">Chẩn đoán hiện tại</p>
+                    <p class="fs-6 fw-bold text-dark mb-0">{{ ts.diagnosis }}</p>
+                </div>
+                <div class="col-md-4 ps-4">
+                    <p class="mb-1 text-danger small fw-bold text-uppercase">Ghi chú bệnh nền</p>
+                    <div class="p-2 rounded {% if ts.note %} bg-warning-subtle border border-warning-subtle {% else %} bg-light {% endif %}">
+                        <p class="mb-0 small">{{ ts.note if ts.note else 'Không có ghi chú đặc biệt.' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-info-subtle text-info-emphasis fw-bold d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-pills me-2"></i>Chi tiết toa thuốc</span>
+            <span class="badge bg-white text-info border border-info-subtle">Mã phiếu: #TS-{{ ts.id }}</span>
+        </div>
+        <div class="card-body p-0">
+            <form method="POST">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="prescription-table">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th style="width: 25%;">Tên thuốc</th>
+                                <th style="width: 10%;">Liều dùng</th>
+                                <th style="width: 15%;">Đơn vị</th>
+                                <th style="width: 10%;">Số ngày</th>
+                                <th style="width: 30%;">Ghi chú / Chỉ dẫn</th> <th style="width: 10%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-3">
+                                    <select name="medicine_id" class="form-select border-info-subtle shadow-sm" required>
+                                        <option value="">-- Chọn thuốc --</option>
+                                        {% for m in medicines %}
+                                        <option value="{{ m.id }}">{{ m.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td><input type="number" step="1" min="1" name="dosage" class="form-control text-center" value="1" oninput="validity.valid||(value='1');" required></td>
+                                <td>
+                                    <input list="unit-list" name="unit" class="form-control" placeholder="viên/ngày" required>
+                                    <datalist id="unit-list">
+                                        <option value="viên/ngày"><option value="gói/ngày"><option value="viên/lần">
+                                    </datalist>
+                                </td>
+                                <td><input type="number" min="1" name="days" class="form-control text-center" value="1" oninput="validity.valid||(value='1');" required></td>
+                                <td><input type="text" name="med_note" class="form-control" placeholder="VD: Uống sau ăn sáng..."></td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i>Xóa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer bg-white border-top-0 d-flex justify-content-between p-3">
+                    <button type="button" class="btn btn-sm btn-outline-info px-3" onclick="addRow()"><i class="fas fa-plus-circle me-1"></i>Thêm thuốc</button>
+                    <div>
+                        <a href="{{ url_for('appointment_list') }}" class="btn btn-light border px-4 me-2">Quay lại</a>
+                        <button type="submit" class="btn btn-success px-5 shadow-sm fw-bold">Hoàn tất & Lưu toa</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

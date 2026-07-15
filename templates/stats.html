@@ -1,0 +1,67 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex align-items-center mb-4">
+        <div class="bg-primary res-icon-circle me-3"></div>
+        <h2 class="fw-bold mb-0 text-dark">Báo Cáo Doanh Thu</h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3">Bộ lọc dữ liệu</h5>
+                <form method="GET" action="/thongke">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Chọn Năm</label>
+                        <select name="nam" class="form-select border-light-subtle">
+                            {% for y in range(2024, 2027) %}
+                            <option value="{{ y }}" {% if y == year %}selected{% endif %}>Năm {{ y }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Chọn Tháng</label>
+                        <select name="thang" class="form-select border-light-subtle">
+                            {% for m in range(1, 13) %}
+                            <option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Bác sĩ</label>
+                        <select name="ma_bac_si" class="form-select border-light-subtle">
+                            <option value="">Tất cả bác sĩ</option>
+                            {% for id_bs, ten_bs in doctors %}
+                            <option value="{{ id_bs }}" {% if id_bs|string == selected_doc %}selected{% endif %}>{{ ten_bs }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Lọc kết quả</button>
+                </form>
+            </div>
+
+            <div class="card border-0 shadow-sm bg-primary text-white p-4">
+                <p class="mb-1 opacity-75">Tổng doanh thu kỳ này</p>
+                <h3 class="fw-bold mb-0">{{ "{:,.0f}".format(tong_tien) }} VNĐ</h3>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <h5 class="fw-bold mb-4">Biểu đồ xu hướng doanh thu</h5>
+                <div class="text-center my-auto">
+                    {% if bieu_do %}
+                        <img src="data:image/png;base64,{{ bieu_do }}" class="img-fluid rounded" style="max-height: 400px;">
+                    {% else %}
+                        <div class="py-5">
+                            <i class="fas fa-chart-bar fa-3x text-light-subtle mb-3"></i>
+                            <p class="text-muted">Không có dữ liệu trong thời gian này</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

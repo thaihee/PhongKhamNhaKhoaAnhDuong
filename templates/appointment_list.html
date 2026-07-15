@@ -1,0 +1,75 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h4 class="mb-0 text-primary fw-bold">DANH SÁCH BỆNH NHÂN HẸN KHÁM</h4>
+            <p class="text-muted small mb-0" style="font-weight: bold">Ngày: {{ selected_date }}</p>
+        </div>
+        <div class="row mb-4 mx-auto w-100">
+            <div class="col-md-6">
+                <form action="{{ url_for('appointment_list') }}" method="GET" class="d-flex align-items-end">
+                    <div class="flex-grow-1 me-2">
+                        <label for="date" class="form-label small fw-bold text-muted">Chọn ngày:</label>
+                        <input type="date" name="date" id="date"
+                               class="form-control"
+                               value="{{ selected_date }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i></i> Xem lịch
+                    </button>
+                    <a href="{{ url_for('appointment_list') }}" class="btn btn-outline-secondary ms-2">
+                        Hôm nay
+                    </a>
+                </form>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Giờ khám</th>
+                    <th>Tên bệnh nhân</th>
+                    <th>Dịch vụ đăng ký</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for a in appointments %}
+                <tr>
+                    <td class="fw-bold">{{ a.time_slot }}</td>
+                    <td>{{ a.patient.name }}</td>
+                    <td>{{ a.service_type }}</td>
+                    <td>
+                            <span class="badge rounded-pill {% if a.status == 'Đã đặt' %}bg-warning text-dark{%elif a.status == 'Chờ thanh toán'%}bg-danger {% else %}bg-success{% endif %}">
+                                {{ "Chờ khám" if a.status == 'Đã đặt' else a.status }}
+                            </span>
+                    </td>
+                    <td class="text-end">
+                        {% if a.status == 'Đã đặt' %}
+                        <a href="{{ url_for('treatment', appointment_id=a.id) }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i> Bắt đầu khám
+                        </a>
+                        {% elif a.status == 'Chờ kê đơn' %}
+                        <a href="{{ url_for('prescription', treatment_id=a.treatment_sheet.id) }}" class="btn btn-primary btn-sm">
+                           <i class="bi bi-pencil-square"></i> Bắt đầu kê đơn
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm" disabled>Hoàn tất</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        Chưa có bệnh nhân nào đăng ký lịch với bạn trong ngày hôm nay.
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

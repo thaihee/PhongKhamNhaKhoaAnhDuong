@@ -1,0 +1,84 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 shadow-sm p-4 mb-5 bg-white rounded">
+            <h2 class="text-center text-primary mb-4 fw-bold">ĐĂNG KÝ LỊCH KHÁM</h2>
+
+            {% if err_msg %}
+            <div class="alert alert-danger border-0 shadow-sm">{{ err_msg }}</div>
+            {% endif %}
+            <div class="container mt-3">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form action="/dangkylichkham" method="post">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Họ và tên:</label>
+                    <input class="form-control bg-light" readonly type="text" value="{{ current_user.fullname }}">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Số điện thoại:</label>
+                        <input class="form-control" name="phone" placeholder="090x xxx xxx" required type="tel">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Chọn Bác sĩ:</label>
+                        <select class="form-select" name="doctor_id" required>
+                            <option disabled selected value="">-- Chọn bác sĩ --</option>
+                            {% for d in doctors %}
+                            <option value="{{ d.id }}">{{ d.name }} ({{ d.specialty }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Ngày muốn khám:</label>
+                        <input class="form-control" id="date_picker" name="date" required type="date">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Giờ khám:</label>
+                        <select class="form-select" name="time_slot" required>
+                            <option value="08:00">08:00 AM</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="14:00">02:00 PM</option>
+                            <option value="15:00">03:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Dịch vụ cần tư vấn:</label>
+                    <select class="form-select" name="service_type">
+                        {% for s in services %}
+                        <option value="{{ s.name }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg" type="submit">Gửi đăng ký lịch hẹn</button>
+                    <a class="btn btn-outline-secondary" href="/">Quay lại trang chủ</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('date_picker').setAttribute('min', today);
+</script>
+{% endblock %}

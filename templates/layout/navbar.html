@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="/"><i class="bi bi-shield-plus"></i> ÁNH DƯƠNG</a>
+        <button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+
+                {% if current_user.is_authenticated %}
+
+                {% if current_user.role.name == 'USER' %}
+                <li class="nav-item">
+                    <a class="nav-link text-primary fw-bold" href="/dangkylichkham">Đăng ký lịch khám</a>
+                </li>
+                {% endif %}
+
+                {% if current_user.role.name == 'DOCTOR' %}
+                <li class="nav-item">
+                    <a class="nav-link text-danger fw-bold" href="/doctor/appointments">
+                        <i class="bi bi-calendar-check"></i> Danh sách khám
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if current_user.role.name == 'STAFF' %}
+                <li class="nav-item">
+                    <a class="nav-link text-warning fw-bold" href="{{ url_for('pending_payments') }}">
+                        <i class="fas fa-file-invoice-dollar me-1"></i> Lập hóa đơn
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if current_user.role.name == 'ADMIN' %}
+                <li class="nav-item">
+                    <a class="nav-link text-success fw-bold" href="thongke">
+                        <i class="fas fa-chart-line me-1"></i> Báo cáo doanh thu
+                    </a>
+                </li>
+                {% endif %}
+
+                <li class="nav-item ms-lg-3 d-flex align-items-center">
+                    <span class="me-2 text-muted small">Chào, <strong>{{ current_user.fullname }}</strong></span>
+                    <a class="btn btn-outline-danger btn-sm" href="/logout">Đăng xuất</a>
+                </li>
+
+                {% else %}
+                <li class="nav-item ms-lg-3">
+                    <a class="btn btn-outline-primary btn-sm me-2" href="/login">Đăng nhập</a>
+                    <a class="btn btn-primary btn-sm" href="/register">Đăng ký</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

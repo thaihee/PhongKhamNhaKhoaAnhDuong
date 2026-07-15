@@ -1,0 +1,161 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+
+<div class="container hero-container">
+    <div class="row align-items-center">
+        <div class="col-lg-6 hero-content animate__animated animate__fadeInLeft">
+            <div class="d-flex align-items-center mb-3">
+                <span class="badge bg-primary px-3 py-2 rounded-pill me-2">Nha Khoa Ánh Dương</span>
+                <span class="text-muted fw-bold small">NỀN TẢNG NHA KHOA THẾ HỆ MỚI</span>
+            </div>
+            <h1>Kiến tạo <br> Nụ cười <span class="text-primary">Tỉ lệ vàng</span></h1>
+            <p class="lead text-secondary mb-5 fs-4">Đơn giản hóa quy trình quản lý, tối ưu hóa trải nghiệm bệnh nhân với công nghệ hàng đầu.</p>
+
+            {% if not current_user.is_authenticated %}
+            <div class="d-flex gap-3">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">Trải nghiệm ngay</a>
+                <a href="#timhieuthem" class="btn btn-outline-dark btn-lg px-5 py-3 rounded-pill fw-bold">Xem thông tin</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-6 mt-5 mt-lg-0 animate__animated animate__fadeInRight">
+            <div class="hero-image-wrapper">
+                <img src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                     alt="Doctor" class="img-fluid main-hero-img">
+
+                <div class="floating-card" style="top: 10%; left: -10%;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success text-white p-2 rounded-circle me-3"><i class="bi bi-check-lg"></i></div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Đặt lịch thành công</h6>
+                            <small class="text-muted">Vừa xong</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="floating-card" style="bottom: 10%; right: -5%; animation-delay: 1s;">
+                    <h4 class="fw-bold text-primary mb-0">98%</h4>
+                    <small class="fw-bold">Khách hàng hài lòng</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="container py-5">
+    <div class="dashboard-panel">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-8">
+                <h2 class="fw-bold">Trung tâm quản trị</h2>
+                <p class="text-muted">Xin chào<strong> {{current_user.fullname}}</strong>. Chúc bạn có một ngày tốt lành</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <img src="https://ui-avatars.com/api/?name={{ current_user.username }}&background=2563eb&color=fff"
+                     class="rounded-circle shadow-sm" width="60" alt="Avatar">
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% if current_user.role.name == 'ADMIN' %}
+            <div class="col-md-3">
+                <a href="thongke" class="action-pill shadow-sm">
+                    <i class="bi bi-cash-stack fs-4 text-success me-3"></i>
+                    <span class="fw-bold">Doanh thu</span>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if current_user.role.name == 'DOCTOR'%}
+            <div class="col-md-3">
+                <a href="/doctor/appointments" class="action-pill shadow-sm">
+                    <i class="bi bi-calendar-event fs-4 text-warning me-3"></i>
+                    <span class="fw-bold">Lịch hẹn</span>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if current_user.role.name == 'STAFF' %}
+            <div class="col-md-4">
+                <a href="{{ url_for('pending_payments') }}" class="action-pill shadow-sm">
+                    <i class="bi bi-file-earmark-medical fs-4 text-primary me-3"></i>
+                    <span class="fw-bold">Lập hóa đơn</span>
+                </a>
+            </div>
+            {%endif%}
+
+            {% if current_user.role.name == 'USER' %}
+            <div class="col-md-4">
+                <a href="#" class="action-pill shadow-sm">
+                    <i class="bi bi-file-earmark-medical fs-4 text-primary me-3"></i>
+                    <span class="fw-bold">Hồ sơ bệnh án</span>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="/dangkylichkham" class="action-pill shadow-sm bg-primary text-white">
+                    <i class="bi bi-plus-circle fs-4 me-3"></i>
+                    <span class="fw-bold">Đặt lịch mới</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div id="timhieuthem" class="container py-5" >
+    <div class="row mb-5 text-center">
+        <div class="col-12">
+            <h6 class="text-primary fw-bold">SERVICES</h6>
+            <h2 class="display-5 fw-bold">Dịch vụ chuyên sâu</h2>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="service-box">
+                <img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=600&q=80" alt="Sứ">
+                <div class="service-overlay">
+                    <h4 class="fw-bold">Răng sứ thẩm mỹ</h4>
+                    <p class="small">Công nghệ CAD/CAM chính xác đến từng micromet.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="service-box">
+                <img src="https://www.auburn.dental/wp-content/uploads/2024/11/Straight_Teeth_with_Clear_Aligners.webp" alt="Niềng">
+                <div class="service-overlay">
+                    <h4 class="fw-bold">Niềng răng Invisalign</h4>
+                    <p class="small">Khay niềng trong suốt, thẩm mỹ tối đa.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="service-box">
+                <img src="https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?auto=format&fit=crop&w=600&q=80" alt="Cấy">
+                <div class="service-overlay">
+                    <h4 class="fw-bold">Cấy ghép Implant</h4>
+                    <p class="small">Khôi phục răng mất bền vững trọn đời.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="p-5 bg-dark rounded-5 text-white text-center position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-10"></div>
+        <h2 class="display-5 fw-bold position-relative">Sẵn sàng nâng tầm nụ cười?</h2>
+        <p class="lead mb-4 position-relative opacity-75">Để lại số điện thoại để nhận tư vấn miễn phí từ chuyên gia.</p>
+        <div class="d-flex justify-content-center gap-2 position-relative">
+            <input type="text" class="form-control w-25 rounded-pill px-4" placeholder="Số điện thoại của bạn">
+            <button class="btn btn-primary rounded-pill px-5 fw-bold">Gửi ngay</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

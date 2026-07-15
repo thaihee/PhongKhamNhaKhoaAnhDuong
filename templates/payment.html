@@ -1,0 +1,130 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4 text-center">
+                    <h2 class="mb-0 fw-bold text-uppercase">Hóa Đơn Thanh Toán</h2>
+                    <p class="mb-0">Phòng Khám Nha Khoa Ánh Dương</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <h6 class="text-muted text-uppercase small fw-bold">Bệnh nhân</h6>
+                            <p class="fs-5 fw-bold mb-1">{{ ts.appointment.patient.name }}</p>
+                            <p class="text-muted mb-0">Giới tính: {{ ts.appointment.patient.user.gender.value }}</p>
+                            <p class="text-muted">Ngày sinh: {{ ts.appointment.patient.user.dob.strftime('%d/%m/%Y') if
+                                ts.appointment.patient.user.dob else '---' }}</p>
+                        </div>
+                        <div class="col-sm-6 text-sm-end">
+                            <h6 class="text-muted text-uppercase small fw-bold">Chi tiết hồ sơ</h6>
+                            <p class="mb-1"><strong>Mã phiếu:</strong> #{{ ts.id }}</p>
+                            <p class="mb-1"><strong>Ngày khám:</strong> {{ ts.appointment.date.strftime('%d/%m/%Y') }}
+                            </p>
+                            <p class="mb-0"><strong>Ngày lập hóa đơn:</strong> {{ current_time.strftime('%d/%m/%Y
+                                %H:%M') }}</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mb-4">
+                        <table class="table table-borderless">
+                            <thead class="border-bottom">
+                            <tr>
+                                <th class="py-3">Dịch vụ thực hiện</th>
+                                <th class="text-end py-3">Đơn giá</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for s in ts.services %}
+                            <tr class="border-bottom-0">
+                                <td class="py-3">{{ s.service.name }}</td>
+                                <td class="text-end py-3">{{ "{:,.0f}".format(s.service.price) }} VNĐ</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if ts.details %}
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm table-borderless bg-light rounded-3">
+                            <thead class="text-muted small">
+                            <tr>
+                                <th class="ps-3 py-2">Tên thuốc</th>
+                                <th class="text-center py-2">Số Lượng</th>
+                                <th class="text-end pe-3 py-2">Thành tiền</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for d in ts.details %}
+                            <tr>
+                                <td class="ps-3 py-2">{{ d.medicine.name }}</td>
+                                <td class="text-center py-2">{{ (d.dosage * d.days)|int }} {{ d.medicine.unit }}</td>
+                                <td class="text-end pe-3 py-2">{{ "{:,.0f}".format((d.dosage * d.days) *
+                                    d.medicine.price) }} VNĐ
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
+                    <hr class="my-4">
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Mã giảm giá</label>
+                            <div class="input-group mb-2">
+                                <input class="form-control" id="coupon_input" placeholder="Nhập mã..." type="text"
+                                       value="{{ coupon.code if coupon else '' }}">
+                                <button class="btn btn-dark" onclick="applyCoupon()" type="button">Áp dụng</button>
+                            </div>
+                            {% if coupon %}
+                            <div class="badge bg-success-subtle text-success border border-success-subtle p-2">
+                                <i class="bi bi-check-circle-fill me-1"></i> Đã áp dụng mã: {{ coupon.code }}
+                                (-{{ "{:,.0f}".format(coupon.value) }}{{ '%' if coupon.type == 'percent' else ' VNĐ' }})
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Tạm tính:</span>
+                                <span>{{ "{:,.0f}".format(subtotal) }} VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Giảm giá:</span>
+                                <span class="text-success">- {{ "{:,.0f}".format(discount_amount) }} VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Thuế VAT (10%):</span>
+                                <span>{{ "{:,.0f}".format(vat) }} VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <h4 class="fw-bold">TỔNG CỘNG:</h4>
+                                <h4 class="fw-bold text-danger">{{ "{:,.0f}".format(total_amount) }} VNĐ</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="mt-5" method="POST">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button class="btn btn-outline-secondary px-4 me-md-2" onclick="window.print()"
+                                    type="button">
+                                <i class="bi bi-printer me-2"></i> In nháp
+                            </button>
+                            <button class="btn btn-primary btn-lg px-5" type="submit">
+                                XÁC NHẬN THANH TOÁN
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
